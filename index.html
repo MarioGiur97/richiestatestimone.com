@@ -69,13 +69,6 @@
             margin-top: 6px;
         }
 
-        .separator {
-            text-align: center;
-            margin: 28px 0 24px;
-            font-size: 13px;
-            color: #888;
-        }
-
         .proposal-card {
             background: white;
             border-radius: 18px;
@@ -114,32 +107,74 @@
             box-shadow: 0 10px 22px rgba(42,73,58,0.35);
         }
 
-        #msg {
-            margin-top: 18px;
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--primary);
-            display: none;
-        }
-
-        small {
-            display: block;
-            font-size: 11px;
-            color: var(--muted);
-            margin-top: 4px;
-        }
-
         @keyframes float {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-6px); }
         }
 
-        /* Confetti */
-        .confetti {
+        /* OVERLAY + POPUP */
+        .overlay {
             position: fixed;
             inset: 0;
-            pointer-events: none;
+            background: rgba(0,0,0,0.45);
+            display: none;           /* mostrato via JS */
+            align-items: center;
+            justify-content: center;
             z-index: 99;
+            padding: 16px;
+        }
+
+        .popup {
+            position: relative;
+            background: #ffffff;
+            border-radius: 18px;
+            padding: 22px 18px 18px;
+            max-width: 360px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+            overflow: hidden;
+        }
+
+        .popup-title {
+            font-size: 18px;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .popup-text {
+            font-size: 14px;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .popup-text small {
+            display: block;
+            font-size: 11px;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        .popup-close {
+            margin-top: 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border-radius: 999px;
+            border: none;
+            font-size: 13px;
+            cursor: pointer;
+            background: #f2f2f6;
+            color: #444;
+        }
+
+        /* Confetti dentro l’overlay */
+        .confetti {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
         }
 
         .confetti-piece {
@@ -154,7 +189,6 @@
         @keyframes fall {
             to {
                 transform: translateY(110vh) rotate(360deg);
-);
                 opacity: 0;
             }
         }
@@ -172,9 +206,9 @@
         <div class="pill">Importo dovuto</div>
 
         <p>Può assolvere la somma dovuta accettando un incarico di altissima importanza e fiducia:</p>
-        <p>-L'evento a cui è chiamato a presenziare si terrà il 15 Giugno 2026</p>
-		<p>-Il soggetto richiedente è Mario</p>
-		<p>-La natura dell'incarico  di tipo ceriminiale e affettivo</p>
+        <p>- L'evento a cui è chiamato a presenziare si terrà il 15 Giugno 2026</p>
+        <p>- Il soggetto richiedente è Mario</p>
+        <p>- La natura dell'incarico è di tipo cerimoniale e affettivo</p>
     </div>
 
     <p style="text-align:center;font-size:12px;color:#999;">
@@ -194,22 +228,39 @@
         <button class="btn" onclick="sayYes()">
             ✔️ Sì, accetto
         </button>
-
-        <div id="msg">
-            Perfetto! 🤝<br>
-            Ora inizia a mettere da parte i soldi, inizia proprio con 73,15€. 😏💶
-            <small>(Non era uno scherzo.)</small>
-        </div>
     </div>
 </div>
 
-<div class="confetti" id="confetti-container"></div>
+<!-- OVERLAY POPUP + CONFETTI -->
+<div class="overlay" id="overlay">
+    <div class="popup">
+        <div class="big-icon">🎉</div>
+        <div class="popup-title">Perfetto! 🤝</div>
+        <div class="popup-text">
+            Ora inizia a mettere da parte i soldi, partendo proprio da 73,15€. 😏💶
+            <small>(Non era uno scherzo.)</small>
+        </div>
+
+        <button class="popup-close" onclick="closePopup()">
+            Chiudi
+        </button>
+
+        <div class="confetti" id="confetti-container"></div>
+    </div>
+</div>
 
 <script>
     function sayYes() {
-        const msg = document.getElementById("msg");
-        msg.style.display = "block";
+        const overlay = document.getElementById("overlay");
+        overlay.style.display = "flex";
         launchConfetti();
+    }
+
+    function closePopup() {
+        const overlay = document.getElementById("overlay");
+        overlay.style.display = "none";
+        const container = document.getElementById("confetti-container");
+        container.innerHTML = "";
     }
 
     function launchConfetti() {
@@ -222,9 +273,9 @@
             const piece = document.createElement("div");
             piece.className = "confetti-piece";
 
-            const left = Math.random() * 100;  
-            const delay = Math.random() * 0.4; 
-            const duration = 2 + Math.random() * 1.5; 
+            const left = Math.random() * 100;        // posizione orizzontale
+            const delay = Math.random() * 0.4;       // ritardo
+            const duration = 2 + Math.random() * 1.5;// durata
             const color = colors[i % colors.length];
 
             piece.style.left = left + "vw";
